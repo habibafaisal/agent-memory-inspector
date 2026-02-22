@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "agent-memory-inspector"
-version = "0.3.0"
-description = "The missing debugger for vector retrieval"
+version = "0.3.1"
+description = "Inspect, compare, and evaluate vector retrieval — MRR, Recall@k, and rank diff in one library"
 readme = "README.md"
 license = "MIT"
 authors = [{name = "Habiba Faisal"}]
