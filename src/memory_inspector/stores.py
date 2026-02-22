@@ -98,7 +98,10 @@ CREATE TABLE IF NOT EXISTS retrieval_records (
 class SQLiteStore:
     def __init__(self, path: str = ".memory_inspector/traces.db") -> None:
         db_path = Path(path)
-        db_path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            db_path.parent.mkdir(parents=True, exist_ok=True)
+        except OSError as e:
+            raise ValueError(f"Cannot create store at {path!r}: {e}") from e
         self._conn = sqlite3.connect(str(db_path))
         self._conn.execute(_CREATE_TABLE)
         self._conn.commit()

@@ -1,6 +1,6 @@
 # agent-memory-inspector
 
-The missing debugger for vector retrieval. Inspect scores, compare retrievers side-by-side, and evaluate quality with MRR and Recall@k — in under 60 seconds.
+Inspect scores, compare retrievers side-by-side, and measure retrieval quality with MRR and Recall@k — in under 60 seconds.
 
 ## Install
 
@@ -57,7 +57,7 @@ RetrievalRecord(
 
 ## 2. Comparing two retrievers with `compare()`
 
-The headline feature of v0.2. Pass any two callables and get a side-by-side breakdown of rank shifts, score deltas, dropped docs, and new candidates.
+Pass any two callables and get a side-by-side breakdown of rank shifts, score deltas, dropped docs, and new candidates.
 
 ```python
 from memory_inspector import compare, RetrievalResult

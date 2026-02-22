@@ -64,7 +64,7 @@ class RetrievalRecord:
     def __repr__(self) -> str:
         lines = [
             "RetrievalRecord(",
-            f"  query={self.query!r} | latency={self.latency_ms:.1f}ms | {len(self.results)} results",
+            f"  query={self.query!r} | latency={self.latency_ms:.3f}ms | {len(self.results)} results",
         ]
         for r in self.results:
             rank_label = r.rank if r.rank is not None else "?"
@@ -113,8 +113,11 @@ class EvaluationResult:
             f"  queries={len(self.per_query)} | k={self.k}",
             f"  {'MRR:':<10} {self.mrr:.3f}",
             f"  {recall_label:<10} {self.recall_at_k:.3f}",
-            ")",
         ]
+        if self.per_query:
+            worst = min(self.per_query, key=lambda q: q.reciprocal_rank)
+            lines.append(f"  {'worst:':<10} {worst.query!r} (RR={worst.reciprocal_rank:.3f})")
+        lines.append(")")
         return "\n".join(lines)
 
 
@@ -130,8 +133,8 @@ class ComparisonResult:
     def __repr__(self) -> str:
         lines = [
             f"ComparisonResult(query={self.query!r})",
-            f"  retriever_a: {len(self.results_a)} results ({self.latency_a_ms:.1f}ms)",
-            f"  retriever_b: {len(self.results_b)} results ({self.latency_b_ms:.1f}ms)",
+            f"  retriever_a: {len(self.results_a)} results ({self.latency_a_ms:.3f}ms)",
+            f"  retriever_b: {len(self.results_b)} results ({self.latency_b_ms:.3f}ms)",
             "  Deltas:",
         ]
         for d in self.deltas:

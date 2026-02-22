@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import time
+import warnings
 from typing import Any, Callable
 
 from memory_inspector.adapters.base import BaseRetrieverAdapter, DefaultAdapter
@@ -78,9 +79,25 @@ def evaluate(
                 " Provide at least one relevant document ID."
             )
 
+        empty_ids = [rid for rid in sample.relevant_ids if rid == ""]
+        if empty_ids:
+            raise ValueError(
+                f"EvalSample for query {sample.query!r} contains empty string(s) in"
+                " relevant_ids. Empty strings will never match any result ID."
+            )
+
         relevant = frozenset(sample.relevant_ids)
         raw = retriever(sample.query, top_k=k)
         results = _assign_ranks(norm.normalize(raw))
+
+        if results and all(r.id is None for r in results):
+            warnings.warn(
+                f"All results for query {sample.query!r} have id=None."
+                " Scores will be 0. Set id on your RetrievalResult objects"
+                " to match relevant_ids.",
+                UserWarning,
+                stacklevel=2,
+            )
 
         qr = _eval_query(results, relevant, k)
         per_query.append(

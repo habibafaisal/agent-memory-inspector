@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "agent-memory-inspector"
-version = "0.3.1"
+version = "0.3.2"
 description = "Inspect, compare, and evaluate vector retrieval — MRR, Recall@k, and rank diff in one library"
 readme = "README.md"
 license = "MIT"

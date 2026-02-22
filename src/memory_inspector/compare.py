@@ -88,10 +88,10 @@ def compare(
             )
         )
 
-    def _delta_sort_key(d: RankDelta) -> tuple[int, int]:
+    def _delta_sort_key(d: RankDelta) -> tuple[int, int, str]:
         before = d.rank_before if d.rank_before is not None else 9999
         after = d.rank_after if d.rank_after is not None else 9999
-        return (min(before, after), max(before, after))
+        return (min(before, after), max(before, after), d.text)
 
     deltas.sort(key=_delta_sort_key)
 

@@ -56,7 +56,7 @@ def test_retrieval_record_repr_format():
     record = RetrievalRecord.create(query="pricing", results=results, top_k=5, latency_ms=3.2)
     text = repr(record)
     assert "pricing" in text
-    assert "3.2ms" in text
+    assert "3.200ms" in text
     assert "0.920" in text
     assert "0.870" in text
     assert "[0]" in text
