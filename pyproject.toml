@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "agent-memory-inspector"
-version = "0.2.0"
+version = "0.2.1"
 description = "The missing debugger for vector retrieval"
 readme = "README.md"
 license = "MIT"
@@ -19,6 +19,10 @@ llamaindex = ["llama-index-core>=0.10"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/memory_inspector"]
+exclude = ["**/.claude"]
+
+[tool.hatch.build.targets.sdist]
+exclude = ["**/.claude"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

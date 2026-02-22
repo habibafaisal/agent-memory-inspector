@@ -1,3 +1,4 @@
+.claude/
 __pycache__/
 *.py[cod]
 *.egg-info/
@@ -12,3 +13,4 @@ venv/
 htmlcov/
 .mypy_cache/
 .ruff_cache/
+.pypirc
