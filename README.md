@@ -1,5 +1,7 @@
 # retric
 
+[![PyPI](https://img.shields.io/pypi/v/retric)](https://pypi.org/project/retric/)
+
 Inspect scores, compare retrievers side-by-side, and measure retrieval quality with MRR and Recall@k — in under 60 seconds.
 
 ## Install
