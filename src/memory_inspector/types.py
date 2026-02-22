@@ -87,6 +87,38 @@ class RankDelta:
 
 
 @dataclass(frozen=True)
+class EvalSample:
+    query: str
+    relevant_ids: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class QueryEvalResult:
+    query: str
+    reciprocal_rank: float
+    recall_at_k: float
+
+
+@dataclass(frozen=True)
+class EvaluationResult:
+    mrr: float
+    recall_at_k: float
+    k: int
+    per_query: tuple[QueryEvalResult, ...]
+
+    def __repr__(self) -> str:
+        recall_label = f"Recall@{self.k}:"
+        lines = [
+            "EvaluationResult(",
+            f"  queries={len(self.per_query)} | k={self.k}",
+            f"  {'MRR:':<10} {self.mrr:.3f}",
+            f"  {recall_label:<10} {self.recall_at_k:.3f}",
+            ")",
+        ]
+        return "\n".join(lines)
+
+
+@dataclass(frozen=True)
 class ComparisonResult:
     query: str
     results_a: tuple[RetrievalResult, ...]

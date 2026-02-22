@@ -1,6 +1,6 @@
 # agent-memory-inspector
 
-The missing debugger for vector retrieval. Inspect scores, compare retrievers, and surface rank shifts in under 60 seconds.
+The missing debugger for vector retrieval. Inspect scores, compare retrievers side-by-side, and evaluate quality with MRR and Recall@k — in under 60 seconds.
 
 ## Install
 
@@ -154,6 +154,98 @@ for record in history:
 
 ---
 
+## 6. Evaluating retrieval quality with `evaluate()`
+
+Stop guessing whether your retriever improved. Give it a labeled dataset and get **MRR** and **Recall@k** in one call.
+
+```python
+from memory_inspector import evaluate, EvalSample, RetrievalResult
+
+# ── tiny knowledge base ──────────────────────────────────────────────────────
+_DOCS = {
+    "rag-intro":      "RAG grounds LLM outputs in retrieved context, cutting hallucinations",
+    "embed-basics":   "Embeddings map text to dense vectors capturing semantic meaning",
+    "chunking":       "Chunking strategy determines retrieval granularity and recall",
+    "reranking":      "Rerankers rescore retrieved candidates using cross-encoder models",
+    "vector-db":      "Vector databases index high-dimensional embeddings for fast ANN search",
+    "hybrid-search":  "Hybrid search combines dense and sparse retrieval for better coverage",
+    "eval-metrics":   "Recall@k and MRR are standard metrics for retrieval evaluation",
+    "context-window": "Context window size limits how much retrieved text an LLM processes",
+}
+
+# simulated retrieval table — swap in your real retriever
+_RETRIEVAL_TABLE = {
+    "how does RAG reduce hallucination?": [
+        ("rag-intro", 0.94), ("context-window", 0.71), ("embed-basics", 0.58),
+        ("hybrid-search", 0.41), ("chunking", 0.33),
+    ],
+    "what is a vector database?": [
+        ("vector-db", 0.97), ("embed-basics", 0.82), ("hybrid-search", 0.54),
+        ("reranking", 0.39), ("rag-intro", 0.31),
+    ],
+    "how to improve retrieval precision?": [
+        ("context-window", 0.72), ("chunking", 0.68), ("reranking", 0.61),
+        ("hybrid-search", 0.49), ("eval-metrics", 0.38),
+    ],
+    "what metrics evaluate retrieval quality?": [
+        ("hybrid-search", 0.65), ("rag-intro", 0.52), ("eval-metrics", 0.48),
+        ("chunking", 0.41), ("vector-db", 0.33),
+    ],
+    "how does hybrid search work?": [
+        ("hybrid-search", 0.91), ("vector-db", 0.74), ("embed-basics", 0.63),
+        ("reranking", 0.52), ("rag-intro", 0.39),
+    ],
+}
+
+def demo_retriever(query: str, top_k: int = 5) -> list[RetrievalResult]:
+    hits = _RETRIEVAL_TABLE[query]
+    return [
+        RetrievalResult(text=_DOCS[doc_id], score=score, id=doc_id, rank=i)
+        for i, (doc_id, score) in enumerate(hits[:top_k])
+    ]
+
+# ── labeled dataset ───────────────────────────────────────────────────────────
+dataset = [
+    EvalSample(query="how does RAG reduce hallucination?",       relevant_ids=("rag-intro",)),
+    EvalSample(query="what is a vector database?",               relevant_ids=("vector-db", "embed-basics")),
+    EvalSample(query="how to improve retrieval precision?",      relevant_ids=("chunking", "reranking")),
+    EvalSample(query="what metrics evaluate retrieval quality?", relevant_ids=("eval-metrics",)),
+    EvalSample(query="how does hybrid search work?",             relevant_ids=("hybrid-search",)),
+]
+
+result = evaluate(demo_retriever, dataset, k=5)
+print(result)
+```
+
+Output:
+
+```
+EvaluationResult(
+  queries=5 | k=5
+  MRR:       0.767
+  Recall@5:  1.000
+)
+```
+
+Drill into per-query breakdowns to find exactly where your retriever loses rank:
+
+```python
+for qr in result.per_query:
+    print(f"  {qr.query[:45]:<45}  RR={qr.reciprocal_rank:.3f}  Recall={qr.recall_at_k:.3f}")
+```
+
+```
+  how does RAG reduce hallucination?            RR=1.000  Recall=1.000
+  what is a vector database?                    RR=1.000  Recall=1.000
+  how to improve retrieval precision?           RR=0.500  Recall=1.000
+  what metrics evaluate retrieval quality?      RR=0.333  Recall=1.000
+  how does hybrid search work?                  RR=1.000  Recall=1.000
+```
+
+Everything is recalled within top-5, but two queries miss rank 1 — a clear signal to tune chunking or reranking for those topics. Swap `demo_retriever` for your real one and use `compare()` to confirm the improvement before shipping.
+
+---
+
 ## API reference
 
 ### `Inspector(retriever, *, config=None, store=None)`
@@ -169,6 +261,45 @@ Calls the retriever, records latency, stores the trace (subject to `sample_rate`
 ### `compare(query, retriever_a, retriever_b, *, top_k=5, adapter_a=None, adapter_b=None) -> ComparisonResult`
 
 Runs both retrievers, normalizes output, computes rank deltas.
+
+### `evaluate(retriever, dataset, *, k=5, adapter=None) -> EvaluationResult`
+
+Benchmarks a retriever against a labeled dataset and returns MRR and Recall@k.
+
+- `retriever`: same callable signature as `Inspector`
+- `dataset`: `list[EvalSample]` — each sample pairs a query with ground-truth document IDs
+- `k`: cutoff rank for Recall@k and retrieval depth (default 5)
+- `adapter`: optional adapter to normalize raw output (defaults to `DefaultAdapter`)
+
+### `EvalSample`
+
+```python
+@dataclass(frozen=True)
+class EvalSample:
+    query: str
+    relevant_ids: tuple[str, ...]   # must match RetrievalResult.id values
+```
+
+### `EvaluationResult`
+
+```python
+@dataclass(frozen=True)
+class EvaluationResult:
+    mrr: float                              # mean reciprocal rank across all queries
+    recall_at_k: float                      # mean Recall@k across all queries
+    k: int
+    per_query: tuple[QueryEvalResult, ...]  # per-query breakdown
+```
+
+### `QueryEvalResult`
+
+```python
+@dataclass(frozen=True)
+class QueryEvalResult:
+    query: str
+    reciprocal_rank: float   # 1/rank_of_first_relevant (1-indexed), 0.0 if none found
+    recall_at_k: float       # hits in top-k / total relevant
+```
 
 ### `RetrievalResult`
 
