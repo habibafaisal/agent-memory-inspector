@@ -1,7 +1,7 @@
 import pytest
 
-from memory_inspector.adapters.base import DefaultAdapter
-from memory_inspector.types import RetrievalResult, ScoredResult
+from retric.adapters.base import DefaultAdapter
+from retric.types import RetrievalResult, ScoredResult
 
 
 def test_default_adapter_handles_retrieval_result():

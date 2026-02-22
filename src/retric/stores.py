@@ -6,7 +6,7 @@ from collections import deque
 from pathlib import Path
 from typing import Any
 
-from memory_inspector.types import RetrievalRecord, RetrievalResult
+from retric.types import RetrievalRecord, RetrievalResult
 
 
 def _record_to_row(record: RetrievalRecord) -> tuple[Any, ...]:
@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS retrieval_records (
 
 
 class SQLiteStore:
-    def __init__(self, path: str = ".memory_inspector/traces.db") -> None:
+    def __init__(self, path: str = ".retric/traces.db") -> None:
         db_path = Path(path)
         try:
             db_path.parent.mkdir(parents=True, exist_ok=True)

@@ -1,6 +1,6 @@
 import pytest
 
-from memory_inspector.types import ScoredResult
+from retric.types import ScoredResult
 
 
 FIXED_RESULTS = [

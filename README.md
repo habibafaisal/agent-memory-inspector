@@ -1,11 +1,11 @@
-# agent-memory-inspector
+# retric
 
 Inspect scores, compare retrievers side-by-side, and measure retrieval quality with MRR and Recall@k — in under 60 seconds.
 
 ## Install
 
 ```bash
-pip install agent-memory-inspector
+pip install retric
 ```
 
 Development:
@@ -26,7 +26,7 @@ pip install -e ".[llamaindex]"
 ## 1. Basic retrieval inspection with `RetrievalResult`
 
 ```python
-from memory_inspector import Inspector, RetrievalResult
+from retric import Inspector, RetrievalResult
 
 def my_retriever(query: str, top_k: int = 5) -> list[RetrievalResult]:
     return [
@@ -60,7 +60,7 @@ RetrievalRecord(
 Pass any two callables and get a side-by-side breakdown of rank shifts, score deltas, dropped docs, and new candidates.
 
 ```python
-from memory_inspector import compare, RetrievalResult
+from retric import compare, RetrievalResult
 
 def embedding_retriever(query: str, top_k: int = 5) -> list[RetrievalResult]:
     return [
@@ -102,7 +102,7 @@ Matching is by `id` first, falling back to exact `text` match.
 ## 3. LangChain adapter
 
 ```python
-from memory_inspector import compare, LangChainAdapter
+from retric import compare, LangChainAdapter
 
 # retriever_a returns list[Document], retriever_b returns list[tuple[Document, float]]
 result = compare(
@@ -121,7 +121,7 @@ The `LangChainAdapter` handles both `list[Document]` (no scores) and `list[tuple
 ## 4. LlamaIndex adapter
 
 ```python
-from memory_inspector import compare, LlamaIndexAdapter
+from retric import compare, LlamaIndexAdapter
 
 result = compare(
     "my query",
@@ -139,9 +139,9 @@ The `LlamaIndexAdapter` handles `list[NodeWithScore]`, accessing `.node.get_cont
 ## 5. Query history with SQLiteStore
 
 ```python
-from memory_inspector import Inspector, RetrievalResult, SQLiteStore
+from retric import Inspector, RetrievalResult, SQLiteStore
 
-store = SQLiteStore(".memory_inspector/traces.db")
+store = SQLiteStore(".retric/traces.db")
 inspector = Inspector(my_retriever, store=store)
 
 inspector.query("pricing policy")
@@ -159,7 +159,7 @@ for record in history:
 Stop guessing whether your retriever improved. Give it a labeled dataset and get **MRR** and **Recall@k** in one call.
 
 ```python
-from memory_inspector import evaluate, EvalSample, RetrievalResult
+from retric import evaluate, EvalSample, RetrievalResult
 
 # ── tiny knowledge base ──────────────────────────────────────────────────────
 _DOCS = {

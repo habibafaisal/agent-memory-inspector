@@ -1,6 +1,6 @@
 import pytest
 
-from memory_inspector.adapters.llamaindex import LlamaIndexAdapter
+from retric.adapters.llamaindex import LlamaIndexAdapter
 
 
 class FakeNode:

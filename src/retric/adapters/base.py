@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any
 
-from memory_inspector.types import RetrievalResult, ScoredResult
+from retric.types import RetrievalResult, ScoredResult
 
 
 class BaseRetrieverAdapter(ABC):

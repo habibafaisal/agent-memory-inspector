@@ -1,6 +1,6 @@
 import pytest
 
-from memory_inspector.types import RetrievalResult, ScoredResult
+from retric.types import RetrievalResult, ScoredResult
 
 
 def test_retrieval_result_defaults():
@@ -49,7 +49,7 @@ def test_scored_result_to_retrieval_result_minimal():
 
 
 def test_retrieval_result_none_score_repr():
-    from memory_inspector.types import RetrievalRecord
+    from retric.types import RetrievalRecord
 
     results = [RetrievalResult(text="hello", score=None, rank=0)]
     record = RetrievalRecord.create(query="q", results=results, top_k=1, latency_ms=1.0)

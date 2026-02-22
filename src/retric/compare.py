@@ -3,8 +3,8 @@ from __future__ import annotations
 import time
 from typing import Any, Callable
 
-from memory_inspector.adapters.base import BaseRetrieverAdapter, DefaultAdapter
-from memory_inspector.types import ComparisonResult, RankDelta, RetrievalResult
+from retric.adapters.base import BaseRetrieverAdapter, DefaultAdapter
+from retric.types import ComparisonResult, RankDelta, RetrievalResult
 
 
 def _assign_ranks(results: list[RetrievalResult]) -> list[RetrievalResult]:

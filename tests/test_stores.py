@@ -1,5 +1,5 @@
-from memory_inspector.stores import InMemoryStore, SQLiteStore
-from memory_inspector.types import RetrievalRecord, RetrievalResult
+from retric.stores import InMemoryStore, SQLiteStore
+from retric.types import RetrievalRecord, RetrievalResult
 
 
 def make_record(query: str = "test") -> RetrievalRecord:

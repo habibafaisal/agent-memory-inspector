@@ -1,12 +1,12 @@
-from memory_inspector.adapters.base import BaseRetrieverAdapter, DefaultAdapter
-from memory_inspector.adapters.langchain import LangChainAdapter
-from memory_inspector.adapters.llamaindex import LlamaIndexAdapter
-from memory_inspector.compare import compare
-from memory_inspector.config import InspectorConfig, Mode
-from memory_inspector.evaluate import evaluate
-from memory_inspector.inspector import Inspector
-from memory_inspector.stores import InMemoryStore, SQLiteStore
-from memory_inspector.types import (
+from retric.adapters.base import BaseRetrieverAdapter, DefaultAdapter
+from retric.adapters.langchain import LangChainAdapter
+from retric.adapters.llamaindex import LlamaIndexAdapter
+from retric.compare import compare
+from retric.config import InspectorConfig, Mode
+from retric.evaluate import evaluate
+from retric.inspector import Inspector
+from retric.stores import InMemoryStore, SQLiteStore
+from retric.types import (
     ComparisonResult,
     EvalSample,
     EvaluationResult,

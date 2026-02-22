@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from memory_inspector import evaluate, EvalSample, EvaluationResult, QueryEvalResult
-from memory_inspector.types import RetrievalResult
+from retric import evaluate, EvalSample, EvaluationResult, QueryEvalResult
+from retric.types import RetrievalResult
 
 
 def make_retriever(*doc_ids: str):

@@ -1,4 +1,4 @@
-from memory_inspector import Inspector, ScoredResult
+from retric import Inspector, ScoredResult
 
 
 def my_retriever(query: str, top_k: int = 5) -> list[ScoredResult]:

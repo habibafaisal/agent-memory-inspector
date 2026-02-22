@@ -1,8 +1,8 @@
 import pytest
 
-from memory_inspector import Inspector, ScoredResult
-from memory_inspector.stores import InMemoryStore
-from memory_inspector.types import RetrievalRecord, RetrievalResult
+from retric import Inspector, ScoredResult
+from retric.stores import InMemoryStore
+from retric.types import RetrievalRecord, RetrievalResult
 
 
 def test_query_returns_record(retriever):

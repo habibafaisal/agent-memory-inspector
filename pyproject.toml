@@ -3,8 +3,8 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "agent-memory-inspector"
-version = "0.3.2"
+name = "retric"
+version = "0.1.0"
 description = "Inspect, compare, and evaluate vector retrieval — MRR, Recall@k, and rank diff in one library"
 readme = "README.md"
 license = "MIT"
@@ -18,7 +18,7 @@ langchain = ["langchain-core>=0.1"]
 llamaindex = ["llama-index-core>=0.10"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/memory_inspector"]
+packages = ["src/retric"]
 exclude = ["**/.claude"]
 
 [tool.hatch.build.targets.sdist]

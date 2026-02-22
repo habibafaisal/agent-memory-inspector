@@ -1,6 +1,6 @@
 import pytest
 
-from memory_inspector.adapters.langchain import LangChainAdapter
+from retric.adapters.langchain import LangChainAdapter
 
 
 class FakeDoc:

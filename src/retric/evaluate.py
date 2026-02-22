@@ -4,9 +4,9 @@ import time
 import warnings
 from typing import Any, Callable
 
-from memory_inspector.adapters.base import BaseRetrieverAdapter, DefaultAdapter
-from memory_inspector.compare import _assign_ranks
-from memory_inspector.types import (
+from retric.adapters.base import BaseRetrieverAdapter, DefaultAdapter
+from retric.compare import _assign_ranks
+from retric.types import (
     EvalSample,
     EvaluationResult,
     QueryEvalResult,

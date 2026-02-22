@@ -2,9 +2,9 @@ from typing import Any
 
 import pytest
 
-from memory_inspector.adapters.base import BaseRetrieverAdapter
-from memory_inspector.compare import compare
-from memory_inspector.types import ComparisonResult, RetrievalResult
+from retric.adapters.base import BaseRetrieverAdapter
+from retric.compare import compare
+from retric.types import ComparisonResult, RetrievalResult
 
 
 def make_retriever(*items: tuple[str, float, str | None]):

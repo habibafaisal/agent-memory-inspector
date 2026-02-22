@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from memory_inspector.types import RetrievalRecord, RetrievalResult, ScoredResult
+from retric.types import RetrievalRecord, RetrievalResult, ScoredResult
 
 
 def test_scored_result_defaults():

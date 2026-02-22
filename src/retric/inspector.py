@@ -4,9 +4,9 @@ import random as _random
 import time
 from typing import Any, Callable
 
-from memory_inspector.config import InspectorConfig
-from memory_inspector.stores import InMemoryStore, SQLiteStore
-from memory_inspector.types import RetrievalRecord, RetrievalResult, ScoredResult
+from retric.config import InspectorConfig
+from retric.stores import InMemoryStore, SQLiteStore
+from retric.types import RetrievalRecord, RetrievalResult, ScoredResult
 
 
 class Inspector:

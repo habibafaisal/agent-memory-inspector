@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from memory_inspector.adapters.base import BaseRetrieverAdapter
-from memory_inspector.types import RetrievalResult
+from retric.adapters.base import BaseRetrieverAdapter
+from retric.types import RetrievalResult
 
 
 class LangChainAdapter(BaseRetrieverAdapter):
