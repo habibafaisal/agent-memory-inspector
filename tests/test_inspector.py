@@ -2,7 +2,7 @@ import pytest
 
 from memory_inspector import Inspector, ScoredResult
 from memory_inspector.stores import InMemoryStore
-from memory_inspector.types import RetrievalRecord
+from memory_inspector.types import RetrievalRecord, RetrievalResult
 
 
 def test_query_returns_record(retriever):
@@ -48,11 +48,26 @@ def test_rank_preserved_when_explicit():
     assert record.results[1].rank == 0
 
 
+def test_scored_result_converted_to_retrieval_result(retriever):
+    inspector = Inspector(retriever)
+    record = inspector.query("test")
+    assert all(isinstance(r, RetrievalResult) for r in record.results)
+
+
+def test_retrieval_result_accepted_directly():
+    def rr_retriever(query: str, top_k: int = 5) -> list[RetrievalResult]:
+        return [RetrievalResult(text="hello", score=0.9)]
+
+    inspector = Inspector(rr_retriever)
+    record = inspector.query("test")
+    assert record.results[0].text == "hello"
+
+
 def test_raises_on_non_list_retriever():
     def bad_retriever(query: str, top_k: int = 5):  # type: ignore[return]
         return "not a list"
 
-    inspector = Inspector(bad_retriever)  # type: ignore[arg-type]
+    inspector = Inspector(bad_retriever)
     with pytest.raises(TypeError, match="list\\[ScoredResult\\]"):
         inspector.query("test")
 
@@ -61,7 +76,7 @@ def test_raises_on_wrong_item_type():
     def bad_retriever(query: str, top_k: int = 5):  # type: ignore[return]
         return [{"content": "x", "score": 0.5}]
 
-    inspector = Inspector(bad_retriever)  # type: ignore[arg-type]
+    inspector = Inspector(bad_retriever)
     with pytest.raises(TypeError, match="ScoredResult"):
         inspector.query("test")
 

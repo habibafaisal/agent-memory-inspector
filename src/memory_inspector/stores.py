@@ -6,18 +6,18 @@ from collections import deque
 from pathlib import Path
 from typing import Any
 
-from memory_inspector.types import RetrievalRecord, ScoredResult
+from memory_inspector.types import RetrievalRecord, RetrievalResult
 
 
 def _record_to_row(record: RetrievalRecord) -> tuple[Any, ...]:
     results_json = json.dumps(
         [
             {
-                "content": r.content,
+                "text": r.text,
                 "score": r.score,
                 "rank": r.rank,
                 "metadata": r.metadata,
-                "document_id": r.document_id,
+                "id": r.id,
             }
             for r in record.results
         ]
@@ -38,12 +38,12 @@ def _row_to_record(row: tuple[Any, ...]) -> RetrievalRecord:
 
     record_id, timestamp_str, query, results_json, top_k, latency_ms, metadata_json = row
     results = [
-        ScoredResult(
-            content=r["content"],
+        RetrievalResult(
+            text=r["text"],
             score=r["score"],
             rank=r["rank"],
             metadata=r.get("metadata", {}),
-            document_id=r.get("document_id"),
+            id=r.get("id"),
         )
         for r in json.loads(results_json)
     ]

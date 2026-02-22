@@ -6,13 +6,13 @@ from typing import Any, Callable
 
 from memory_inspector.config import InspectorConfig
 from memory_inspector.stores import InMemoryStore, SQLiteStore
-from memory_inspector.types import RetrievalRecord, ScoredResult
+from memory_inspector.types import RetrievalRecord, RetrievalResult, ScoredResult
 
 
 class Inspector:
     def __init__(
         self,
-        retriever: Callable[..., list[ScoredResult]],
+        retriever: Callable[..., Any],
         *,
         config: InspectorConfig | None = None,
         store: InMemoryStore | SQLiteStore | None = None,
@@ -26,7 +26,7 @@ class Inspector:
         if store is not None:
             self._store: InMemoryStore | SQLiteStore = store
         elif self._config.store_path:
-            self._store = InMemoryStore(max_records=self._config.max_records)
+            self._store = SQLiteStore(self._config.store_path)
         else:
             self._store = InMemoryStore(max_records=self._config.max_records)
 
@@ -37,28 +37,43 @@ class Inspector:
 
         if not isinstance(raw, list):
             raise TypeError(
-                f"Retriever must return list[ScoredResult], got {type(raw).__name__}"
+                f"Retriever must return list[ScoredResult] or list[RetrievalResult],"
+                f" got {type(raw).__name__}"
             )
 
-        results: list[ScoredResult] = []
+        results: list[RetrievalResult] = []
         for i, item in enumerate(raw):
-            if not isinstance(item, ScoredResult):
+            if isinstance(item, RetrievalResult):
+                if item.rank is None:
+                    item = RetrievalResult(
+                        text=item.text,
+                        score=item.score,
+                        id=item.id,
+                        rank=i,
+                        metadata=item.metadata,
+                    )
+                results.append(item)
+            elif isinstance(item, ScoredResult):
+                if not isinstance(item.score, (int, float)):
+                    raise ValueError(
+                        f"ScoredResult[{i}].score must be numeric,"
+                        f" got {type(item.score).__name__}"
+                    )
+                rank = item.rank if item.rank is not None else i
+                results.append(
+                    RetrievalResult(
+                        text=item.content,
+                        score=item.score,
+                        id=item.document_id,
+                        rank=rank,
+                        metadata=item.metadata,
+                    )
+                )
+            else:
                 raise TypeError(
-                    f"Retriever result[{i}] must be ScoredResult, got {type(item).__name__}"
+                    f"Retriever result[{i}] must be ScoredResult or RetrievalResult,"
+                    f" got {type(item).__name__}"
                 )
-            if not isinstance(item.score, (int, float)):
-                raise ValueError(
-                    f"ScoredResult[{i}].score must be numeric, got {type(item.score).__name__}"
-                )
-            if item.rank is None:
-                item = ScoredResult(
-                    content=item.content,
-                    score=item.score,
-                    rank=i,
-                    metadata=item.metadata,
-                    document_id=item.document_id,
-                )
-            results.append(item)
 
         record = RetrievalRecord.create(
             query=query,

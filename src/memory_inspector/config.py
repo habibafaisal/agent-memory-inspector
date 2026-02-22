@@ -13,5 +13,5 @@ class Mode(Enum):
 class InspectorConfig:
     mode: Mode = Mode.DEV
     sample_rate: float = 1.0
-    store_path: str = ".memory_inspector/traces.db"
+    store_path: str | None = None
     max_records: int = 1000

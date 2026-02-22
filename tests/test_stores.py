@@ -1,11 +1,11 @@
 from memory_inspector.stores import InMemoryStore, SQLiteStore
-from memory_inspector.types import RetrievalRecord, ScoredResult
+from memory_inspector.types import RetrievalRecord, RetrievalResult
 
 
 def make_record(query: str = "test") -> RetrievalRecord:
     return RetrievalRecord.create(
         query=query,
-        results=[ScoredResult(content="result", score=0.9, rank=0)],
+        results=[RetrievalResult(text="result", score=0.9, rank=0)],
         top_k=5,
         latency_ms=1.0,
     )
@@ -126,17 +126,17 @@ def test_sqlite_persists_across_instances(tmp_path):
     store2.close()
 
 
-def test_sqlite_round_trips_scored_result_fields(tmp_path):
+def test_sqlite_round_trips_retrieval_result_fields(tmp_path):
     db = str(tmp_path / "test.db")
     record = RetrievalRecord.create(
         query="round trip",
         results=[
-            ScoredResult(
-                content="hello",
+            RetrievalResult(
+                text="hello",
                 score=0.75,
                 rank=2,
                 metadata={"source": "wiki"},
-                document_id="doc-123",
+                id="doc-123",
             )
         ],
         top_k=10,
@@ -150,10 +150,10 @@ def test_sqlite_round_trips_scored_result_fields(tmp_path):
     assert fetched is not None
 
     r = fetched.results[0]
-    assert r.content == "hello"
+    assert r.text == "hello"
     assert r.score == 0.75
     assert r.rank == 2
     assert r.metadata == {"source": "wiki"}
-    assert r.document_id == "doc-123"
+    assert r.id == "doc-123"
     assert fetched.metadata == {"session": "abc"}
     store.close()
